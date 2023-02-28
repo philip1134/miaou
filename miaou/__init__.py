@@ -1,0 +1,14 @@
+# -*- coding:utf-8 -*-
+#
+# author: philip1134
+# date: 2023-02-27
+#
+
+
+__version__ = "0.1.0"
+
+
+from miaou.app import Application
+
+
+# end
