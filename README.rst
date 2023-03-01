@@ -10,6 +10,7 @@ miaou
    :target: https://pypi.org/project/miaou/
    :alt: Supported Python versions
 
+
 ``miaou`` 是 `pyzentao <https://github.com/philip1134/pyzentao>`__ 规格文件的生成工具。
 
 宋朝的严羽在《沧浪诗话·诗辨》中说："大抵禅道惟在妙悟，诗道亦在妙悟"，于是取名 "妙悟 (miaou)"。
@@ -45,29 +46,29 @@ miaou
 
 参数说明
 
-    - site_url
-        你家禅道的域名，比如 "http://zentao.flyingcat.com"
+- site_url
+    你家禅道的域名，比如 "http://zentao.flyingcat.com"
 
-    - username
-        登录用户名，用于禅道授权
+- username
+    登录用户名，用于禅道授权
 
-    - password
-        登录密码，用于禅道授权
+- password
+    登录密码，用于禅道授权
 
-    - scanner
-        扫描器类型，目前自带扫描器支持 "selenium"，也可以自定义扫描器，详见下文
+- scanner
+    扫描器类型，目前自带扫描器支持 "selenium"，也可以自定义扫描器，详见下文
 
-    - combined_print
-        合并打印规格，默认是 True ，会将规格打印到一个 yaml 文件，否则按 module 打印到不同文件
+- combined_print
+    合并打印规格，默认是 True ，会将规格打印到一个 yaml 文件，否则按 module 打印到不同文件
 
-    - output_path
-        输出的目录，默认是当前目录
+- output_path
+    输出的目录，默认是当前目录
 
-    - config
-        传给 scanner 的配置参数，应为 dict 类型
+- config
+    传给 scanner 的配置参数，应为 dict 类型
 
 扫描器
-~~~~~
+~~~~~~
 
 扫描禅道页面以获得规格，目前支持 ``selenium`` ，也可以自定义扫描器。
 
@@ -89,7 +90,7 @@ selenium
     )
 
 自定义扫描器
-^^^^^^^^^^
+^^^^^^^^^^^^
 
 也可以自定义扫描器，从 miaou.Scanner 继承
 
@@ -103,20 +104,20 @@ selenium
         def __init__(self, config):
             ...
 
+
 然后需要实现如下方法：
 
-    - open(self, site_url, username, password)
-        一般是获得禅道授权
+- open(self, site_url, username, password)
+    一般是获得禅道授权
 
-    - close(self)
-        清扫工作，没有就不写
+- close(self)
+    清扫工作，没有就不写
 
-    - get_module_groups(self, dev_url)
-        获得 API 模块页面链接，也就是 ``后台 - 二次开发 - API`` 页面左边栏 ``模块列表``
-        下的那些链接。返回模块链接数组 [url...]
+- get_module_groups(self, dev_url)
+    获得 API 模块页面链接，也就是 ``后台 - 二次开发 - API`` 页面左边栏 ``模块列表`` 下的那些链接。返回模块链接数组 [url...]
 
-    - get_apis(self, api_url)
-        在指定的模块页面，即 api_url 中获取 API 规格，返回包含dict的数组类似 [{name, method, path, params}]
+- get_apis(self, api_url)
+    在指定的模块页面，即 api_url 中获取 API 规格，返回包含dict的数组类似 [{name, method, path, params}]
 
 使用自定义扫描器
 
@@ -129,3 +130,4 @@ selenium
         scanner=MyScanner(config),
         ...
     )
+
