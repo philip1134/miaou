@@ -2,61 +2,130 @@
 miaou
 =====
 
-``pyzentao-specs`` 包含了 `pyzentao <https://github.com/philip1134/pyzentao>`__ 的
-禅道API规格文件，``pyzentao`` 在 ``r0.3.0`` 版本之后不再更新规格文件，转而由本项目持续更新。
+.. image:: https://img.shields.io/pypi/v/miaou.svg?color=orange
+   :target: https://pypi.python.org/pypi/miaou
+   :alt: PyPI Version
+
+.. image:: https://img.shields.io/pypi/pyversions/miaou.svg
+   :target: https://pypi.org/project/miaou/
+   :alt: Supported Python versions
+
+``miaou`` 是 `pyzentao <https://github.com/philip1134/pyzentao>`__ 规格文件的生成工具。
+
+宋朝的严羽在《沧浪诗话·诗辨》中说："大抵禅道惟在妙悟，诗道亦在妙悟"，于是取名 "妙悟 (miaou)"。
 
 
 用法
 ----
 
-下载
+安装
 ~~~~
 
 .. code:: text
 
-    git clone https://github.com/philip1134/pyzentao-specs.git
-
-复制
-~~~~
-
-根据你的禅道版本，将对应的规格文件夹复制到你的业务项目目录下，例如你家在用禅道17.6版：
-
-.. code:: text
-
-    cp -r pyzentao-specs/v17.6 /path/to/my/project
-
-使用Windows的童鞋请自便。
+    $ pip install -U miaou
 
 使用
 ~~~~
 
-使用自定义目录初始化 pyzentao 对象
+使用 ``miaou`` 方法生成规格文件
 
 .. code:: python
 
-    import pyzentao
+    import miaou
 
-    zentao = pyzentao.Zentao({
-        "url": "http://my.zentao.site/zentao",
-        "username": "admin",
-        "password": "123456",
-        "spec": {
-            "path": "/path/to/my/project/v17.6", # 自定义规格文件的地址
-            "merge": False,
-        }
-    })
+    miaou.generate(
+        site_url="http://my.zentao.site",
+        username="admin",
+        password="123456",
+        scanner="selenium",
+        combined_print=True,
+        output_path="."
+    )
 
-如果需要支持新的禅道版本，可以提 issue 或发消息给我。也可以自己动手，想啥都有，只需使用 yaml 文件定义规格，格式如
+参数说明
 
-.. code:: yaml
+    - site_url
+        你家禅道的域名，比如 "http://zentao.flyingcat.com"
 
-    user_task:
-        method: GET
-        path: user-task
-        params:
-            - userID
-            - type
-            - recTotal
-            - recPerPage
-            - pageID
-    ...
+    - username
+        登录用户名，用于禅道授权
+
+    - password
+        登录密码，用于禅道授权
+
+    - scanner
+        扫描器类型，目前自带扫描器支持 "selenium"，也可以自定义扫描器，详见下文
+
+    - combined_print
+        合并打印规格，默认是 True ，会将规格打印到一个 yaml 文件，否则按 module 打印到不同文件
+
+    - output_path
+        输出的目录，默认是当前目录
+
+    - config
+        传给 scanner 的配置参数，应为 dict 类型
+
+扫描器
+~~~~~
+
+扫描禅道页面以获得规格，目前支持 ``selenium`` ，也可以自定义扫描器。
+
+selenium
+^^^^^^^^
+
+使用 ``selenium 4.8.0`` 版本以上，默认使用 chromedriver，可根据你的 Chrome 版本，在
+`chromedriver <http://chromedriver.storage.googleapis.com/index.html>`__ 下载，并
+添加到 path 中。如果要使用 firefox 可在参数中指定，例如
+
+.. code:: python
+
+    import miaou
+
+    miaou.generate(
+        ...
+        scanner="selenium",
+        config={"driver": "firefox"},
+    )
+
+自定义扫描器
+^^^^^^^^^^
+
+也可以自定义扫描器，从 miaou.Scanner 继承
+
+.. code:: python
+
+    import miaou
+
+    class MyScanner(miaou.Scanner):
+        """doc string"""
+
+        def __init__(self, config):
+            ...
+
+然后需要实现如下方法：
+
+    - open(self, site_url, username, password)
+        一般是获得禅道授权
+
+    - close(self)
+        清扫工作，没有就不写
+
+    - get_module_groups(self, dev_url)
+        获得 API 模块页面链接，也就是 ``后台 - 二次开发 - API`` 页面左边栏 ``模块列表``
+        下的那些链接。返回模块链接数组 [url...]
+
+    - get_apis(self, api_url)
+        在指定的模块页面，即 api_url 中获取 API 规格，返回包含dict的数组类似 [{name, method, path, params}]
+
+使用自定义扫描器
+
+.. code:: python
+
+    import miaou
+
+    miaou.generate(
+        ...
+        scanner=MyScanner(config),
+        ...
+    )

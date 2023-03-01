@@ -8,26 +8,27 @@
 import time
 import miaou.logger as logger
 import miaou.utils as utils
+from miaou.scanner.base import Scanner
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 
 
-class SeleniumScanner:
+_step_interval = 2
+
+
+class SeleniumScanner(Scanner):
     """selenium scanner"""
 
-    def __init__(
-        self,
-        driver="chrome",
-        wait_timeout=3
-    ):
+    def __init__(self, config):
         """initializer"""
 
-        if "firefox" == driver:
+        if "firefox" == config.get("driver", "chrome"):
             self.driver = webdriver.Firefox()
         else:
             self.driver = webdriver.Chrome()
 
+        wait_timeout = config.get("wait_timeout", 3)
         self.driver.implicitly_wait(wait_timeout)
         self.wait = WebDriverWait(self.driver, wait_timeout)
 
@@ -35,8 +36,9 @@ class SeleniumScanner:
         """login zentao"""
 
         logger.stage("login zentao '%s'" % site_url)
+
         self.driver.get(site_url)
-        time.sleep(2)
+        time.sleep(_step_interval)
 
         account = self._wait_for_element("input#account")
         account.send_keys(username)
@@ -47,6 +49,8 @@ class SeleniumScanner:
         auth = self._wait_for_element("button#submit")
         # auth.send_keys(Keys.ENTER)
         auth.click()
+
+        time.sleep(_step_interval)
 
     def close(self):
         """close scanner"""
@@ -62,7 +66,7 @@ class SeleniumScanner:
         urls = []
 
         self.driver.get(dev_url)
-        time.sleep(2)
+        time.sleep(_step_interval)
 
         # check out iframe
         self._switch_to_content_iframe()
@@ -88,7 +92,7 @@ class SeleniumScanner:
 
         logger.info("get api from '%s'..." % api_url)
         self.driver.get(api_url)
-        time.sleep(1)
+        time.sleep(_step_interval)
 
         # check out iframe
         self._switch_to_content_iframe()

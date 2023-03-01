@@ -9,6 +9,13 @@ __version__ = "0.1.0"
 
 
 from miaou.app import Application
+from miaou.scanner.base import Scanner
+
+
+def generate(**attrs):
+    """main caller"""
+
+    Application(**attrs).main()
 
 
 # end

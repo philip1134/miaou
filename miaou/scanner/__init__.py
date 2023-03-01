@@ -8,7 +8,7 @@
 from miaou.scanner.selenium_scanner import SeleniumScanner
 
 
-class Scanner:
+class ScannerFactory:
     """scanner factory"""
 
     _map = {
@@ -16,11 +16,11 @@ class Scanner:
     }
 
     @classmethod
-    def get(cls, scanner):
+    def get(cls, scanner, config={}):
         """get scanner by scanner type"""
 
         if isinstance(scanner, str):
-            return cls._map.get(scanner, SeleniumScanner)()
+            return cls._map.get(scanner, SeleniumScanner)(config)
         else:
             # maybe customized scanner
             return scanner
