@@ -8,38 +8,50 @@
 import time
 import miaou.logger as logger
 import miaou.utils as utils
-from miaou.scanner.selenium_wrapper import SeleniumWrapper
+from selenium import webdriver
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.by import By
 
 
 class SeleniumScanner:
     """selenium scanner"""
 
-    def __init__(self):
+    def __init__(
+        self,
+        driver="chrome",
+        wait_timeout=3
+    ):
         """initializer"""
 
-        self.selenium = SeleniumWrapper()
+        if "firefox" == driver:
+            self.driver = webdriver.Firefox()
+        else:
+            self.driver = webdriver.Chrome()
+
+        self.driver.implicitly_wait(wait_timeout)
+        self.wait = WebDriverWait(self.driver, wait_timeout)
 
     def open(self, site_url, username, password):
         """login zentao"""
 
         logger.stage("login zentao '%s'" % site_url)
-        self.selenium.driver.get(site_url)
+        self.driver.get(site_url)
         time.sleep(2)
 
-        account = self.selenium.wait_for_element("input#account")
+        account = self._wait_for_element("input#account")
         account.send_keys(username)
 
-        passwd = self.selenium.wait_for_element("input[name=password]")
+        passwd = self._wait_for_element("input[name=password]")
         passwd.send_keys(password)
 
-        auth = self.selenium.wait_for_element("button#submit")
+        auth = self._wait_for_element("button#submit")
         # auth.send_keys(Keys.ENTER)
         auth.click()
 
     def close(self):
         """close scanner"""
 
-        self.selenium.close()
+        self.driver.close()
 
     def get_module_groups(self, dev_url):
         """get module group page urls
@@ -49,15 +61,16 @@ class SeleniumScanner:
 
         urls = []
 
-        self.selenium.driver.get(dev_url)
+        self.driver.get(dev_url)
         time.sleep(2)
 
         # check out iframe
         self._switch_to_content_iframe()
 
         # find module group urls
-        mg_elements = self.selenium.wait_for_elements(
+        mg_elements = self._wait_for_elements(
             "#mainContent #sidebar a")
+
         for element in mg_elements:
             url = element.get_attribute("href")
             logger.info("got '%s'" % url)
@@ -74,18 +87,17 @@ class SeleniumScanner:
         apis = []
 
         logger.info("get api from '%s'..." % api_url)
-        self.selenium.driver.get(api_url)
+        self.driver.get(api_url)
         time.sleep(1)
 
         # check out iframe
         self._switch_to_content_iframe()
 
         # find urls
-        detail_elements = self.selenium.wait_for_elements(
+        detail_elements = self._wait_for_elements(
             "#mainContent .main-col.main-content .detail")
         for element in detail_elements:
-            url = element.find_element_by_css_selector(
-                ".detail-title").text
+            url = element.find_element(By.CSS_SELECTOR, ".detail-title").text
 
             method, path, params = utils.parse_url_to_api_items(url)
             name = path.replace("-", "_")
@@ -105,10 +117,69 @@ class SeleniumScanner:
 
         try:
             logger.info("check out iframe...")
-            ifr = self.selenium.wait_for_element(
+            ifr = self._wait_for_element(
                 "iframe#appIframe-admin, iframe#appIframe-my")
-            self.selenium.driver.switch_to.frame(ifr)
+            self.driver.switch_to.frame(ifr)
         except Exception:
             pass
+
+    def _wait_for_element(
+        self,
+        selector,
+        scroll_to=True,
+        by=By.CSS_SELECTOR
+    ):
+        """wait for element, scroll window to the element position
+        if scroll_to is True, make the element visible.
+        """
+
+        try:
+            _element = self.wait.until(
+                lambda driver: driver.find_element(by, selector))
+
+            if scroll_to:
+                self._scroll_to_element(_element)
+        except Exception:
+            logger.warning("element not found %s" % selector)
+            _element = None
+        return _element
+
+    def _wait_for_elements(
+        self,
+        selector,
+        by=By.CSS_SELECTOR
+    ):
+        """wait for elements by selector type"""
+
+        return self.wait.until(
+            lambda driver: driver.find_elements(by, selector))
+
+    def _element_exists(
+        self,
+        selector,
+        by=By.CSS_SELECTOR
+    ):
+        """check out the element existence"""
+
+        try:
+            _element = self.wait.until(
+                lambda driver: driver.find_element(by, selector))
+        except Exception:
+            _element = None
+
+        if _element is not None:
+            logger.info("element found %s" % selector)
+            return True
+        else:
+            logger.info("element not exists %s" % selector)
+            return False
+
+    def _scroll_to_element(self, element):
+        """scroll window to the element position"""
+
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView();",
+            element
+        )
 
 # end

@@ -9,5 +9,5 @@ Version 0.1.0
 
 Released on 2023-02-24
 
-- selenium inspector
+- selenium scanner
 - print specs to yaml file

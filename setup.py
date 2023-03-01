@@ -30,7 +30,7 @@ setup(
     install_requires=[
         "PyYAML",
         "click",
-        "selenium==4.2.0",
+        "selenium>=4.8.0",
     ],
     extras_require={
         'dev': [
