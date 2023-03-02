@@ -100,10 +100,17 @@ class ApiScanner(Scanner):
             #   [{name, post, param, desc...}]
             responded_apis = data.get("apis", [])
             for responded_api in responded_apis:
+                api = {}
+
                 # api name
-                api = {"name": "%s_%s" % (
-                    module, responded_api.get("name", ""))}
+                name = responded_api.get("name", "")
+
+                api["name"] = "%s_%s" % (module, name)
                 logger.info("got name: %s" % api["name"])
+
+                # api path
+                api["path"] = "%s-%s" % (module, name)
+                logger.info("- got path: %s" % api["path"])
 
                 # api method
                 if responded_api.get("post", False):
@@ -111,12 +118,7 @@ class ApiScanner(Scanner):
                 else:
                     api["method"] = "GET"
 
-                # path
-                api["path"] = "%s-%s" % (
-                    module, responded_api.get("name", ""))
-                logger.info("- got path: %s" % api["path"])
-
-                # params
+                # api params
                 params = responded_api.get("param", [])
                 if isinstance(params, dict):
                     api["params"] = list(params.keys())

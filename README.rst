@@ -11,23 +11,20 @@ miaou
    :alt: Supported Python versions
 
 
-``miaou`` 是 `pyzentao <https://github.com/philip1134/pyzentao>`__ 规格文件的生成工具。
+``miaou`` 是 `pyzentao <https://github.com/philip1134/pyzentao>`__ 规格文件的自助生成工具。
 
 宋朝的严羽在《沧浪诗话·诗辨》中说："大抵禅道惟在妙悟，诗道亦在妙悟"，于是取名 "妙悟 (miaou)"。
 
 
-用法
-----
-
 安装
-~~~~
+----
 
 .. code:: text
 
     $ pip install -U miaou
 
 使用
-~~~~
+----
 
 使用 ``miaou`` 方法生成规格文件
 
@@ -56,7 +53,7 @@ miaou
     登录密码，用于禅道授权
 
 - scanner
-    扫描器类型，目前自带扫描器支持 "selenium"，也可以自定义扫描器，详见下文
+    扫描器类型，目前自带扫描器支持 "selenium" 和 "api"，也可以自定义扫描器，详见下文
 
 - combined_print
     合并打印规格，默认是 True ，会将规格打印到一个 yaml 文件，否则按 module 打印到不同文件
@@ -68,12 +65,12 @@ miaou
     传给 scanner 的配置参数，应为 dict 类型
 
 扫描器
-~~~~~~
+-------
 
-扫描禅道页面以获得规格，目前支持 ``selenium`` ，也可以自定义扫描器。
+扫描禅道页面以获得规格，目前支持 ``selenium`` 和 ``api``，也可以自定义扫描器。
 
 selenium
-^^^^^^^^
+~~~~~~~~~
 
 使用 ``selenium 4.8.0`` 版本以上，默认使用 chromedriver，可根据你的 Chrome 版本，在
 `chromedriver <http://chromedriver.storage.googleapis.com/index.html>`__ 下载，并
@@ -89,8 +86,53 @@ selenium
         config={"driver": "firefox"},
     )
 
+api
+~~~~
+
+使用禅道对应的 API 生成规格。调用时指定扫描器类型即可
+
+.. code:: python
+
+    import miaou
+
+    miaou.generate(
+        ...
+        scanner="api",
+        ...
+    )
+
+注意，使用此扫描器生成的规格与禅道文档有一些不同，比如禅道文档中描述的查询 testsuite 的 API 为
+
+.. code:: text
+
+    GET  /zentao/testsuite.json
+
+使用 ``selenium`` 扫描器生成的规格即为
+
+.. code:: yaml
+
+    testsuite:
+        method: GET
+        path: testsuite
+
+而禅道 API 查询到的格式类似于
+
+.. code:: text
+
+    GET  /zentao/testsuite-index.json
+
+所以使用 ``api`` 扫描器生成的规格为
+
+.. code:: yaml
+
+    testsuite_index:
+        method: GET
+        path: testsuite-index
+
+这两种 API 得到的数据是相同的，所以在转换成 ``pyzentao`` 方法时请以你使用的规格文件为准。
+
 自定义扫描器
-^^^^^^^^^^^^
+~~~~~~~~~~~
 
 也可以自定义扫描器，从 miaou.Scanner 继承
 
@@ -131,3 +173,4 @@ selenium
         ...
     )
 
+另，此工具的功能仅在 ``Linux/Python3.10`` 环境下测试，使用其他环境的宝子请自娱自乐 ╮(╯▽╰)╭
