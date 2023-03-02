@@ -6,6 +6,7 @@
 
 
 from miaou.scanner.selenium_scanner import SeleniumScanner
+from miaou.scanner.api_scanner import ApiScanner
 
 
 class ScannerFactory:
@@ -13,6 +14,7 @@ class ScannerFactory:
 
     _map = {
         "selenium": SeleniumScanner,
+        "api": ApiScanner,
     }
 
     @classmethod

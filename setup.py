@@ -31,6 +31,7 @@ setup(
         "PyYAML",
         "click",
         "selenium>=4.8.0",
+        "requests",
     ],
     extras_require={
         'dev': [
