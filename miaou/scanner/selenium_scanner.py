@@ -5,9 +5,9 @@
 #
 
 
+import re
 import time
 import miaou.logger as logger
-import miaou.utils as utils
 from miaou.scanner.base import Scanner
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
@@ -103,7 +103,7 @@ class SeleniumScanner(Scanner):
         for element in detail_elements:
             url = element.find_element(By.CSS_SELECTOR, ".detail-title").text
 
-            method, path, params = utils.parse_url_to_api_items(url)
+            method, path, params = self._parse_url_to_api_items(url)
             name = path.replace("-", "_")
 
             apis.append({
@@ -186,4 +186,39 @@ class SeleniumScanner(Scanner):
             element
         )
 
+    def _parse_url_to_api_items(self, url):
+        """parse url to api items,
+        return tuple contains (method, path, params)"""
+
+        logger.info("parsing '%s'" % url)
+
+        path = []
+        params = []
+
+        # remove namespace and suffix
+        slices = re.split("\s+", url)
+        method = slices[0].strip().upper()
+        if "GET/POST" == method:
+            method = "POST"
+
+        url = slices[1].strip()
+        for pattern in (
+            r"^/zentao/",
+            r"\.json.*$",
+        ):
+            url = re.sub(pattern, "", url)
+
+        # split path
+        for t in url.split("-"):
+            t = t.strip()
+            if re.match("\[\w+\]", t) is None:
+                logger.info("- got path '%s'" % t)
+                path.append(t)
+            else:
+                t = t.replace(r"[", "")
+                t = t.replace(r"]", "")
+                logger.info("- got param '%s'" % t)
+                params.append(t)
+
+        return (method, "-".join(path), params)
 # end
