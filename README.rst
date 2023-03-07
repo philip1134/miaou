@@ -26,7 +26,7 @@ miaou
 使用
 ----
 
-使用 ``miaou`` 方法生成规格文件
+调用 ``miaou.generate()`` 方法生成规格文件
 
 .. code:: python
 
@@ -40,6 +40,8 @@ miaou
         combined_print=True,
         output_path="."
     )
+
+结果放在 /output_path/pyzentao_specs_timestamp 下面
 
 参数说明
 
@@ -129,7 +131,7 @@ api
         method: GET
         path: testsuite-index
 
-这两种 API 得到的数据是相同的，所以在转换成 ``pyzentao`` 方法时请以你使用的规格文件为准。
+这两种 API 得到的数据是相同的，在转换成 ``pyzentao`` 方法时请以你使用的规格文件为准。
 
 自定义扫描器
 ~~~~~~~~~~~~~
