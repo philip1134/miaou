@@ -33,7 +33,7 @@ miaou
     import miaou
 
     miaou.generate(
-        site_url="http://my.zentao.site",
+        site_url="http://my.zentao.site/zentao",
         username="admin",
         password="123456",
         scanner="selenium",
@@ -46,7 +46,8 @@ miaou
 参数说明
 
 - site_url
-    你家禅道的域名，比如 "http://zentao.flyingcat.com"
+    你家禅道的域名，一般需要加上 zentao 这个前缀，如 "http://my.zentao.site/zentao"，
+    注意在禅道 v18 版本后默认没有这个前缀
 
 - username
     登录用户名，用于禅道授权
