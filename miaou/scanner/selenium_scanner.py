@@ -205,6 +205,7 @@ class SeleniumScanner(Scanner):
         for pattern in (
             r"^/zentao/",
             r"\.json.*$",
+            r"^/",
         ):
             url = re.sub(pattern, "", url)
 

@@ -21,13 +21,18 @@ class ApiScanner(Scanner):
 
         pass
 
-    def open(self, site_url, username, password):
+    def open(
+        self,
+        site_url,
+        username,
+        password,
+    ):
         """tear up works"""
 
         session_url = urllib.parse.urljoin(
-            site_url, "zentao/api-getSessionID.json")
+            site_url, "api-getSessionID.json")
         login_url = urllib.parse.urljoin(
-            site_url, "zentao/user-login.json")
+            site_url, "user-login.json")
 
         return self._get_session(session_url) and \
             self._login(login_url, username, password)

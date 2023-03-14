@@ -28,13 +28,17 @@ class Application:
         """
 
         self.site_url = attrs.get("site_url", "")
+        # check out url
+        if not self.site_url.endswith("/"):
+            self.site_url += "/"
+
         self.username = attrs.get("username", "admin")
         self.password = attrs.get("password", "")
 
         self.dev_url = attrs.get("dev_url", None)
         if self.dev_url is None:
             self.dev_url = urllib.parse.urljoin(
-                self.site_url, "zentao/dev-api.html")
+                self.site_url, "dev-api.html")
 
         self.scanner = ScannerFactory.get(
             attrs.get("scanner", "selenium"),
