@@ -4,6 +4,14 @@ miaou Changelog
 Here you can see the full list of changes between each miaou release.
 
 
+Version 0.2.2
+-------------
+
+Released on 2023-03-29
+
+- selenium-scanner: handle fake url for new layout in zentao 18.3
+
+
 Version 0.2.1
 -------------
 

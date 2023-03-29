@@ -49,6 +49,11 @@ miaou
     你家禅道的域名，一般需要加上 zentao 这个前缀，如 "http://my.zentao.site/zentao"，
     注意在禅道 v18 版本后默认没有这个前缀
 
+- dev_url
+    禅道二次开发页面，如 "http://my.zentao.site/zentao/dev-api.html"，默认会由 site_url
+    加上 dev-api.html 拼凑而成，但在禅道 v18 版本后改为 "http://my.zentao.site/dev-api-index.html"，
+    所以建议根据你的禅道二次开发页面显式赋值该参数
+
 - username
     登录用户名，用于禅道授权
 

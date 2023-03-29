@@ -12,6 +12,7 @@ from miaou.scanner.base import Scanner
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
+from collections import OrderedDict
 
 
 _step_interval = 2
@@ -72,15 +73,22 @@ class SeleniumScanner(Scanner):
         self._switch_to_content_iframe()
 
         # find module group urls
-        mg_elements = self._wait_for_elements(
-            "#mainContent #sidebar a")
+        mg_elements = self._wait_for_elements("#mainContent #sidebar a")
 
         for element in mg_elements:
             url = element.get_attribute("href")
-            logger.info("got '%s'" % url)
-            urls.append(url)
+            if self._fake_module_url(url, dev_url):
+                if "false" == element.get_attribute("data-has-children"):
+                    # use data-module to make url
+                    module = element.get_attribute("data-module")
+                    url = dev_url.replace("index", module)
+                    logger.info("got '%s'" % url)
+                    urls.append(url)
+            else:
+                logger.info("got '%s'" % url)
+                urls.append(url)
 
-        return urls
+        return list(OrderedDict.fromkeys(urls))
 
     def get_apis(self, api_url):
         """get apis from api page
@@ -222,4 +230,9 @@ class SeleniumScanner(Scanner):
                 params.append(t)
 
         return (method, "-".join(path), params)
+
+    def _fake_module_url(self, module_url, dev_url):
+        """check out using fake href '#' in module element"""
+
+        return module_url == (dev_url + "#")
 # end
